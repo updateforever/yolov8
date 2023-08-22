@@ -8,7 +8,9 @@ from .block import *
 from .afpn import AFPN_P345, AFPN_P345_Custom, AFPN_P2345, AFPN_P2345_Custom
 from ultralytics.yolo.utils.tal import dist2bbox, make_anchors
 
-__all__ = ['Detect_DyHead', 'Detect_AFPN_P345', 'Detect_AFPN_P345_Custom', 'Detect_AFPN_P2345', 'Detect_AFPN_P2345_Custom']
+__all__ = ['Detect_DyHead', 'Detect_AFPN_P345', 'Detect_AFPN_P345_Custom', 'Detect_AFPN_P2345',
+           'Detect_AFPN_P2345_Custom']
+
 
 class Detect_DyHead(nn.Module):
     """YOLOv8 Detect head with DyHead for detection models."""
@@ -30,7 +32,8 @@ class Detect_DyHead(nn.Module):
         self.dyhead = nn.Sequential(*[DyHeadBlock(hidc) for i in range(block_num)])
         self.cv2 = nn.ModuleList(
             nn.Sequential(Conv(hidc, c2, 3), Conv(c2, c2, 3), nn.Conv2d(c2, 4 * self.reg_max, 1)) for _ in ch)
-        self.cv3 = nn.ModuleList(nn.Sequential(Conv(hidc, c3, 3), Conv(c3, c3, 3), nn.Conv2d(c3, self.nc, 1)) for _ in ch)
+        self.cv3 = nn.ModuleList(
+            nn.Sequential(Conv(hidc, c3, 3), Conv(c3, c3, 3), nn.Conv2d(c3, self.nc, 1)) for _ in ch)
         self.dfl = DFL(self.reg_max) if self.reg_max > 1 else nn.Identity()
 
     def forward(self, x):
@@ -66,6 +69,7 @@ class Detect_DyHead(nn.Module):
             a[-1].bias.data[:] = 1.0  # box
             b[-1].bias.data[:m.nc] = math.log(5 / m.nc / (640 / s) ** 2)  # cls (.01 objects, 80 classes, 640 img)
 
+
 class Detect_AFPN_P345(nn.Module):
     """YOLOv8 Detect head with AFPN for detection models."""
     dynamic = False  # force grid reconstruction
@@ -85,7 +89,8 @@ class Detect_AFPN_P345(nn.Module):
         self.afpn = AFPN_P345(ch, hidc)
         self.cv2 = nn.ModuleList(
             nn.Sequential(Conv(hidc, c2, 3), Conv(c2, c2, 3), nn.Conv2d(c2, 4 * self.reg_max, 1)) for _ in ch)
-        self.cv3 = nn.ModuleList(nn.Sequential(Conv(hidc, c3, 3), Conv(c3, c3, 3), nn.Conv2d(c3, self.nc, 1)) for _ in ch)
+        self.cv3 = nn.ModuleList(
+            nn.Sequential(Conv(hidc, c3, 3), Conv(c3, c3, 3), nn.Conv2d(c3, self.nc, 1)) for _ in ch)
         self.dfl = DFL(self.reg_max) if self.reg_max > 1 else nn.Identity()
 
     def forward(self, x):
@@ -119,6 +124,7 @@ class Detect_AFPN_P345(nn.Module):
             a[-1].bias.data[:] = 1.0  # box
             b[-1].bias.data[:m.nc] = math.log(5 / m.nc / (640 / s) ** 2)  # cls (.01 objects, 80 classes, 640 img)
 
+
 class Detect_AFPN_P345_Custom(Detect_AFPN_P345):
     """YOLOv8 Detect head with AFPN for detection models."""
     dynamic = False  # force grid reconstruction
@@ -131,6 +137,7 @@ class Detect_AFPN_P345_Custom(Detect_AFPN_P345):
         super().__init__(nc, hidc, ch)
         self.afpn = AFPN_P345_Custom(ch, hidc, block_type, 4)
 
+
 class Detect_AFPN_P2345(Detect_AFPN_P345):
     """YOLOv8 Detect head with AFPN for detection models."""
     dynamic = False  # force grid reconstruction
@@ -142,6 +149,7 @@ class Detect_AFPN_P2345(Detect_AFPN_P345):
     def __init__(self, nc=80, hidc=256, ch=()):  # detection layer
         super().__init__(nc, hidc, ch)
         self.afpn = AFPN_P2345(ch, hidc)
+
 
 class Detect_AFPN_P2345_Custom(Detect_AFPN_P345):
     """YOLOv8 Detect head with AFPN for detection models."""

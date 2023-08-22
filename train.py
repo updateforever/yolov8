@@ -36,7 +36,7 @@ def parse_opt():
     parser.add_argument('--cfg', type=str, default='hyp.yaml', help='hyperparameters path')
     parser.add_argument('--data', type=str, default='ultralytics/datasets/VOC-house2k-cl5.yaml', help='data yaml path')
 
-    parser.add_argument('--epochs', type=int, default=100, help='number of epochs to train for')
+    parser.add_argument('--epochs', type=int, default=150, help='number of epochs to train for')
     parser.add_argument('--patience', type=int, default=100, help='EarlyStopping patience (epochs without improvement)')
     parser.add_argument('--unamp', action='store_true', help='Unuse Automatic Mixed Precision (AMP) training')
     parser.add_argument('--batch', type=int, default=16, help='number of images per batch (-1 for AutoBatch)')
